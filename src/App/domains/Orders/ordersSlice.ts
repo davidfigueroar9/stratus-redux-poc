@@ -1,10 +1,16 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import ordersService, { orderShape } from "./ordersService";
+import ordersService, { orderShape, OrderDetailsType } from "./orderService";
 import { getFiltersPage } from "./ordersSelectors";
 import { RootState } from "App/store";
+import { logout } from "App/domains/Auth";
 
 type orderEntitiesType = {
   [key: string]: orderShape;
+};
+
+type OrderEntitiesDetatilsType = {
+  data: OrderDetailsType | null;
+  status: string;
 };
 
 type FiltersType = {
@@ -13,6 +19,7 @@ type FiltersType = {
 
 interface OrdersSchema {
   entities: orderEntitiesType;
+  entityDetails: OrderEntitiesDetatilsType;
   status: string;
   ids: string[];
   filters: FiltersType;
@@ -21,11 +28,23 @@ interface OrdersSchema {
 const initialState: OrdersSchema = {
   status: "idle",
   entities: {},
+  entityDetails: {
+    status: "idle",
+    data: null,
+  },
   filters: {
     page: 1,
   },
   ids: [],
 };
+
+export const fetchOrderById = createAsyncThunk<OrderDetailsType, string>(
+  "orders/fetchOrderById",
+  async (id) => {
+    const data = await ordersService.fetchOrderById(id);
+    return data;
+  }
+);
 
 export const fetchOrders = createAsyncThunk<{
   data: orderShape[];
@@ -52,12 +71,16 @@ const ordersSlice = createSlice({
   name: "orders",
   initialState,
   reducers: {
-    fetch(state) {
-      state = initialState;
-      return state;
+    cleanUpDetails(state) {
+      state.entityDetails = initialState.entityDetails;
     },
   },
   extraReducers: (builder) => {
+    builder.addCase(logout.toString(), (state) => {
+      state = initialState;
+      return state;
+    });
+
     builder.addCase(fetchOrders.pending, (state) => {
       state.status = "loading";
       return state;
@@ -92,9 +115,37 @@ const ordersSlice = createSlice({
       state.filters.page = action.payload.page;
       return state;
     });
+
+    builder.addCase(fetchMoreOrders.rejected, (state) => {
+      state.status = "error";
+      return state;
+    });
+
+    builder.addCase(fetchOrders.rejected, (state) => {
+      state.status = "error";
+      return state;
+    });
+
+    builder.addCase(fetchOrderById.pending, (state, action) => {
+      state.entityDetails.status = "loading";
+      state.entityDetails.data = null;
+      return state;
+    });
+
+    builder.addCase(fetchOrderById.rejected, (state, action) => {
+      state.entityDetails.status = "error";
+      state.entityDetails.data = null;
+      return state;
+    });
+
+    builder.addCase(fetchOrderById.fulfilled, (state, action) => {
+      state.entityDetails.data = action.payload;
+      state.entityDetails.status = "idle";
+      return state;
+    });
   },
 });
 
 export const { reducer } = ordersSlice;
 
-export const { fetch } = ordersSlice.actions;
+export const { cleanUpDetails } = ordersSlice.actions;

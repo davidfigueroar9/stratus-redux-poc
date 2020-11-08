@@ -1,16 +1,29 @@
 import React from "react";
 import { Switch, Route, useRouteMatch } from "react-router-dom";
+import classnames from "classnames";
 import OrderList from "./pages/OrderList";
+import OrderDetails from "./pages/OrderDetails";
 
 function Orders() {
   const { path } = useRouteMatch();
+  const isDetails = useRouteMatch(`/orders/:id`);
+  const orderClassname = classnames({
+    "is-hidden": isDetails,
+  });
   return (
-    <Switch>
-      <Route exact path={path}>
+    <>
+      <div
+        className={orderClassname}
+        style={{ height: "100vh", overflow: "auto" }}
+      >
         <OrderList />
-      </Route>
-      <Route path={`${path}/:id`}>Orders Details</Route>
-    </Switch>
+      </div>
+      <Switch>
+        <Route path={`${path}/:id`}>
+          <OrderDetails />
+        </Route>
+      </Switch>
+    </>
   );
 }
 

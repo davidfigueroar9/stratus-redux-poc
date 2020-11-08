@@ -1,6 +1,10 @@
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
+
 import { useAppDispatch } from "App/store";
+import PageLayout from "components/PageLayout";
+import Loading from "components/Loading";
+
 import { fetchOrders, fetchMoreOrders } from "../../ordersSlice";
 import { getOrdersList } from "../../ordersSelectors";
 
@@ -11,7 +15,10 @@ function OrdersList() {
   const { ids, isLoading } = useSelector(getOrdersList);
 
   useEffect(() => {
-    dispatch(fetchOrders());
+    const promise = dispatch(fetchOrders());
+    return () => {
+      promise.abort();
+    };
   }, [dispatch]);
 
   const shouldShowSpinner = isLoading && ids.length === 0;
@@ -21,35 +28,14 @@ function OrdersList() {
   };
 
   return (
-    <>
-      <section className="hero is-primary">
-        <div className="hero-body">
-          <div className="container">
-            <h1 className="title">Tienda Nube</h1>
-            <p>Orders List</p>
-          </div>
-        </div>
-      </section>
-      <div className="p-3">
-        {shouldShowSpinner && (
-          <progress className="progress is-small is-primary" max="100">
-            15%
-          </progress>
-        )}
-      </div>
-
+    <PageLayout title="Ordenes" logout>
+      <Loading isLoading={shouldShowSpinner} />
       {!shouldShowSpinner && (
-        <div className="card p-3">
+        <div className="card p-3 container">
           {ids.map((id) => (
             <OrdersListItem key={id} id={id} />
           ))}
-          {!shouldShowSpinner && isLoading && (
-            <div className="p-3">
-              <progress className="progress is-small is-primary" max="100">
-                15%
-              </progress>
-            </div>
-          )}
+          <Loading isLoading={!shouldShowSpinner && isLoading} />
           {!isLoading && (
             <div className="button" onClick={handleLoadMore}>
               Cargar Mas
@@ -57,7 +43,7 @@ function OrdersList() {
           )}
         </div>
       )}
-    </>
+    </PageLayout>
   );
 }
 

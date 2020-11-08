@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import AuthServices from "./authService";
+import AuthServices, { authData } from "./authService";
 
 export enum statusType {
   idle = "idle",
@@ -8,16 +8,9 @@ export enum statusType {
   success = "success",
 }
 
-interface AuthDataInterface {
-  accessToken: string;
-  country: string;
-  name: string;
-  storeId: string;
-}
-
 interface AuthSchema {
   status: statusType;
-  data: AuthDataInterface | null;
+  data: authData | null;
 }
 
 const initialState: AuthSchema = {
@@ -26,7 +19,7 @@ const initialState: AuthSchema = {
 };
 
 export const login = createAsyncThunk<
-  AuthDataInterface,
+  authData,
   { email: string; password: string }
 >("auth/fetchLogin", async ({ email, password }) => {
   const data = await AuthServices.login(email, password);

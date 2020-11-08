@@ -40,3 +40,17 @@ export const getOrderById = createSelector(
   getEntityById,
   (entities, id) => entities[id]
 );
+
+export const getOrderDetails = createSelector(
+  getOrdersState,
+  (orderState) => orderState.entityDetails
+);
+
+export const getOrderDetailsWithStatus = createSelector(
+  getOrderDetails,
+  (orderState) => ({
+    isLoading: orderState.status === "loading",
+    isError: orderState.status === "error",
+    orderDetails: orderState.data,
+  })
+);

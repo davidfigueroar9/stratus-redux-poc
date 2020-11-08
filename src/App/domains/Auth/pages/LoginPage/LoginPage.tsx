@@ -3,7 +3,9 @@ import { useSelector } from "react-redux";
 import { Redirect } from "react-router-dom";
 import classnames from "classnames";
 
-import { useAppDispatch } from "../../../../store";
+import { useAppDispatch } from "App/store";
+import PageLayout from "components/PageLayout";
+
 import { login } from "../../authSlice";
 import { getLoginStatus, isUserLogin } from "../../authSelectors";
 
@@ -32,15 +34,8 @@ function LoginPage() {
   });
 
   return (
-    <>
+    <PageLayout title="Tienda Nube">
       {isLogged && <Redirect to="/orders" />}
-      <section className="hero is-primary">
-        <div className="hero-body">
-          <div className="container">
-            <h1 className="title">Tienda Nube</h1>
-          </div>
-        </div>
-      </section>
       <div className="container p-3">
         {isError && (
           <div className="notification is-danger">
@@ -82,7 +77,7 @@ function LoginPage() {
           </div>
         </form>
       </div>
-    </>
+    </PageLayout>
   );
 }
 
