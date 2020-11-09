@@ -1,7 +1,10 @@
 import axios from "axios";
 
 const axiosIntance = axios.create({
-  baseURL: "http://localhost:4500/",
+  baseURL:
+    process.env.NODE_ENV !== "production"
+      ? "http://localhost:4500/"
+      : "https://cirrus.tiendanube.com/",
 });
 
 export const setTokenToAxiosIntance = (token: string) => {
