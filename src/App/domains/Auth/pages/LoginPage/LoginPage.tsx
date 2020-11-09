@@ -7,12 +7,12 @@ import { useAppDispatch } from "App/store";
 import PageLayout from "components/PageLayout";
 
 import { login } from "../../authSlice";
-import { getLoginStatus, isUserLogin } from "../../authSelectors";
+import { getLoginStatus } from "../../authSelectors";
 
 function LoginPage() {
   const dispatch = useAppDispatch();
-  const { isLoading, isError } = useSelector(getLoginStatus);
-  const isLogged = useSelector(isUserLogin);
+  const { isLoading, isError, isLogin } = useSelector(getLoginStatus);
+
   const [formState, setFormState] = useState<{
     email: string;
     password: string;
@@ -35,7 +35,7 @@ function LoginPage() {
 
   return (
     <PageLayout title="Tienda Nube">
-      {isLogged && <Redirect to="/orders" />}
+      {isLogin && <Redirect to="/orders" />}
       <div className="container p-3">
         {isError && (
           <div className="notification is-danger">
@@ -45,9 +45,12 @@ function LoginPage() {
         <form className="card" onSubmit={handleOnSubmit}>
           <div className="card-content">
             <div className="field">
-              <label className="label">Email</label>
+              <label className="label" htmlFor="email">
+                Email
+              </label>
               <div className="control">
                 <input
+                  id="email"
                   className="input"
                   onChange={handleOnChange}
                   name="email"
@@ -59,9 +62,12 @@ function LoginPage() {
               </div>
             </div>
             <div className="field">
-              <label className="label">Password</label>
+              <label className="label" htmlFor="password">
+                Password
+              </label>
               <div className="control">
                 <input
+                  id="password"
                   className="input"
                   onChange={handleOnChange}
                   required

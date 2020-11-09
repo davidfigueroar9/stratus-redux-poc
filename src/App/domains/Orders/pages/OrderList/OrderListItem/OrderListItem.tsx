@@ -45,7 +45,7 @@ function OrdersListItem({ id }: OrdersListItemInterface) {
         <div className="dropdown-menu" id="dropdown-menu2" role="menu">
           <div className="dropdown-content">
             {order.products.map((product) => (
-              <div className="dropdown-item">
+              <div className="dropdown-item" key={product.name}>
                 <div className="media" key={product.name}>
                   <div className="media-left">
                     <figure className="image is-48x48">
